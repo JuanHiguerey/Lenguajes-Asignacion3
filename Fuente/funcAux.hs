@@ -21,6 +21,24 @@ esDisyuncion :: Proposicion -> Bool
 esDisyuncion (Disyuncion prop1 prop2) = True
 esDisyuncion _ = False
 
+-- Funcion que determina si una proposicion es una implicacion
+
+esImplicacion :: Proposicion -> Bool
+esImplicacion (Implicacion prop1 prop2) = True
+esImplicacion _ = False
+
+-- Funcion que determina si una proposicion es una equivalencia
+
+esEquivalecia :: Proposicion -> Bool
+esEquivalecia (Equivalencia prop1 prop2) = True
+esEquivalecia _ = False
+
+-- Funcion que determina si una proposicion es una variable
+
+esVariable :: Proposicion -> Bool
+esVariable (Variable nombre) = True
+esVariable _ = False
+
 -- Funcion que retorna la primera proposicion dentro de una proposicion compuesta
 -- En caso de consstantes y variables, se retorna la proposicion tal cual
 -- En caso de negacion, se retorna la proposicion sin negar
