@@ -6,22 +6,22 @@ import FuncAux
 -- Se evalua los casos: Disyuncion externa, Conjuncion externa, y las mismas con negaciones para un total de 16 reglas de simplificacion
 absorcion :: Proposicion -> Proposicion
 absorcion (Disyuncion prop1 prop2) =
-    if (esConjuncion prop2) && (prop1 == getProp1 prop2) then prop1         -- P | (P & Q)
-    else if (esConjuncion prop2) && (prop1 == getProp2 prop2) then prop1    -- P | (Q & P)
-    else if (esConjuncion prop1) && (prop2 == getProp1 prop1) then prop2    -- (P & Q) | P
-    else if (esConjuncion prop1) && (prop2 == getProp2 prop1) then prop2    -- (Q & P) | P
+    if (esConjuncion prop2) && (prop1 == getProp1 prop2) then prop1                                                                                -- P | (P & Q)
+    else if (esConjuncion prop2) && (prop1 == getProp2 prop2) then prop1                                                                           -- P | (Q & P)
+    else if (esConjuncion prop1) && (prop2 == getProp1 prop1) then prop2                                                                           -- (P & Q) | P
+    else if (esConjuncion prop1) && (prop2 == getProp2 prop1) then prop2                                                                           -- (Q & P) | P
     else if (esConjuncion prop2 && esNegacion (getProp1 prop2)) && (prop1 == getProp1 (getProp1 prop2)) then Disyuncion prop1 (getProp2 prop2)     -- P | (¬P & Q)
-    else if (esConjuncion prop2 && esNegacion (getProp1 prop2)) && (prop1 == getProp1 (getProp2 prop2)) then Disyuncion prop1 (getProp1 prop2)     -- P | (Q & ¬P)
+    else if (esConjuncion prop2 && esNegacion (getProp2 prop2)) && (prop1 == getProp1 (getProp2 prop2)) then Disyuncion prop1 (getProp1 prop2)     -- P | (Q & ¬P)
     else if (esConjuncion prop1 && esNegacion (getProp1 prop1)) && (prop2 == getProp1 (getProp1 prop1)) then Disyuncion prop2 (getProp2 prop1)     -- (¬P & Q) | P
     else if (esConjuncion prop1 && esNegacion (getProp2 prop1)) && (prop2 == getProp1 (getProp2 prop1)) then Disyuncion prop2 (getProp1 prop2)     -- (Q & ¬P) | P
     else Disyuncion prop1 prop2                                             -- Cualquier otro caso, se retorna la entrada tal cual
 absorcion (Conjuncion prop1 prop2) =   
-    if (esDisyuncion prop2) && (prop1 == getProp1 prop2) then prop1         -- P & (P | Q)
-    else if (esDisyuncion prop2) && (prop1 == getProp2 prop2) then prop1    -- P & (Q | P)
-    else if (esDisyuncion prop1) && (prop2 == getProp1 prop1) then prop2    -- (P | Q) & P
-    else if (esDisyuncion prop1) && (prop2 == getProp2 prop1) then prop2    -- (Q | P) & P
+    if (esDisyuncion prop2) && (prop1 == getProp1 prop2) then prop1                                                                                 -- P & (P | Q)
+    else if (esDisyuncion prop2) && (prop1 == getProp2 prop2) then prop1                                                                            -- P & (Q | P)
+    else if (esDisyuncion prop1) && (prop2 == getProp1 prop1) then prop2                                                                            -- (P | Q) & P
+    else if (esDisyuncion prop1) && (prop2 == getProp2 prop1) then prop2                                                                            -- (Q | P) & P
     else if (esDisyuncion prop2 && esNegacion (getProp1 prop2)) && (prop1 == getProp1 (getProp1 prop2)) then Conjuncion prop1 (getProp2 prop2)      -- P & (¬P | Q)
-    else if (esDisyuncion prop2 && esNegacion (getProp1 prop2)) && (prop1 == getProp1 (getProp2 prop2)) then Conjuncion prop1 (getProp1 prop2)      -- P & (Q | ¬P)
+    else if (esDisyuncion prop2 && esNegacion (getProp2 prop2)) && (prop1 == getProp1 (getProp2 prop2)) then Conjuncion prop1 (getProp1 prop2)      -- P & (Q | ¬P)
     else if (esDisyuncion prop1 && esNegacion (getProp1 prop1)) && (prop2 == getProp1 (getProp1 prop1)) then Conjuncion prop2 (getProp2 prop1)      -- (¬P | Q) & P
     else if (esDisyuncion prop1 && esNegacion (getProp2 prop1)) && (prop2 == getProp1 (getProp2 prop1)) then Conjuncion prop2 (getProp1 prop2)      -- (Q | ¬P) & P
     else Conjuncion prop1 prop2                                             -- Cualquier otro caso, se retorna la entrada tal cual
@@ -87,6 +87,8 @@ simpl (Conjuncion prop1 prop2) =
         abs2 = (absorcion prop2)
         idem2 = (idempotencia prop2)
         neu2 = (neutro prop2)
+        simpComp1 = simpl prop1
+        simpComp2 = simpl prop2
     in
         -- Luego se revisa si alguna de las simplificaciones anteriores no es igual a la entrada original ya que esto significa que la simplificacion fue exitosa
         -- En este caso se repite el proceso hasta que el algoritmo no pueda simplificar mas
@@ -99,7 +101,9 @@ simpl (Conjuncion prop1 prop2) =
         else if not(abs2 == prop2) then simpl (Conjuncion prop1 abs2)
         else if not(idem2 == prop2) then simpl (Conjuncion prop1 idem2)
         else if not(neu2 == prop2) then simpl (Conjuncion prop1 neu2)
-        else Conjuncion prop1 prop2     -- Si ninguna simplificacion fue exitos, entonces se retorna la entrada tal cual
+        else if not(simpComp1 == prop1) then simpl (Conjuncion simpComp1 prop2)
+        else if not(simpComp2 == prop2) then simpl (Conjuncion prop1 simpComp2)
+        else Conjuncion prop1 prop2     -- Si ninguna simplificacion fue exitosa, entonces se retorna la entrada tal cual
 -- El procedimiento es el mismo cuando la entrada es una disyuncion
 simpl (Disyuncion prop1 prop2) =
     let
@@ -112,6 +116,8 @@ simpl (Disyuncion prop1 prop2) =
         abs2 = (absorcion prop2)
         idem2 = (idempotencia prop2)
         neu2 = (neutro prop2)
+        simpComp1 = simpl prop1
+        simpComp2 = simpl prop2
     in
         if not(abs == Disyuncion prop1 prop2) then simpl abs
         else if not(idem == Disyuncion prop1 prop2) then simpl idem
@@ -122,7 +128,15 @@ simpl (Disyuncion prop1 prop2) =
         else if not(abs2 == prop2) then simpl (Disyuncion prop1 abs2)
         else if not(idem2 == prop2) then simpl (Disyuncion prop1 idem2)
         else if not(neu2 == prop2) then simpl (Disyuncion prop1 neu2)
+        else if not(simpComp1 == prop1) then simpl (Conjuncion simpComp1 prop2)
+        else if not(simpComp2 == prop2) then simpl (Conjuncion prop1 simpComp2)
         else Disyuncion prop1 prop2
 -- Cuando la entrada es una implicacion o una equivalencia, se intenta simplificar sus componentes
 simpl (Implicacion prop1 prop2) = Implicacion (simpl(prop1)) (simpl(prop2))
 simpl (Equivalencia prop1 prop2) = Equivalencia (simpl(prop1)) ( simpl(prop2))
+
+
+-- Pruebas para la funcion simpl
+test1 = (vq \/ vq) <=> ((vp \/ Constante False) /\ ((vp /\ Constante True) \/ vr))
+test2 = (vr /\ ((vp /\ vp) \/ (¬)vr)) .=> (vq \/ ((vq /\ vq) \/ (¬)vq))
+test3 = (¬)(vp /\ (vq \/ vp))

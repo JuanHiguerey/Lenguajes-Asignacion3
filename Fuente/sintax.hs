@@ -17,10 +17,10 @@ instance Eq Proposicion where
   (==) (Constante valor1) (Constante valor2) = if (valor1 == valor2) then True else False
   (==) (Variable nombre1) (Variable nombre2) = if (nombre1 == nombre2) then True else False
   (==) (Negacion prop1) (Negacion prop2) = if (prop1 == prop2) then True else False
-  (==) (Conjuncion prop1a prop1b) (Conjuncion prop2a prop2b) = if ((prop1a == prop2a) && (prop2b == prop2b)) then True else False
-  (==) (Disyuncion prop1a prop1b) (Disyuncion prop2a prop2b) = if ((prop1a == prop2a) && (prop2b == prop2b)) then True else False
-  (==) (Implicacion prop1a prop1b) (Implicacion prop2a prop2b) = if ((prop1a == prop2a) && (prop2b == prop2b)) then True else False
-  (==) (Equivalencia prop1a prop1b) (Equivalencia prop2a prop2b) = if ((prop1a == prop2a) && (prop2b == prop2b)) then True else False
+  (==) (Conjuncion prop1a prop1b) (Conjuncion prop2a prop2b) = if ((prop1a == prop2a) && (prop1b == prop2b)) then True else False
+  (==) (Disyuncion prop1a prop1b) (Disyuncion prop2a prop2b) = if ((prop1a == prop2a) && (prop1b == prop2b)) then True else False
+  (==) (Implicacion prop1a prop1b) (Implicacion prop2a prop2b) = if ((prop1a == prop2a) && (prop1b == prop2b)) then True else False
+  (==) (Equivalencia prop1a prop1b) (Equivalencia prop2a prop2b) = if ((prop1a == prop2a) && (prop1b == prop2b)) then True else False
   (==) _ _ = False
 
 
