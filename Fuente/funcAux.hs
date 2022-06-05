@@ -1,4 +1,4 @@
-module FuncAux (esConstante, esNegacion, esConjuncion, esDisyuncion, getProp1, getProp2) where
+module FuncAux (esConstante, esNegacion, esConjuncion, esDisyuncion, esImplicacion, esEquivalecia, esVariable, getProp1, getProp2) where
 import Sintax
 
 -- Funcion que determina si una proposicion es una constante
